@@ -1,3 +1,12 @@
+function normalizeTime(str) {
+  if (!str) return '';
+  const m = String(str).match(/(\d{1,2}):(\d{2})(?::(\d{2}))?/);
+  if (!m) return '';
+  const h = m[1].padStart(2, '0');
+  const min = m[2];
+  const s = m[3] || '00';
+  return `${h}:${min}:${s}`;
+}
 // server.js
 //
 // Backend Check In / Out + Admin
@@ -441,7 +450,7 @@ app.get('/admin/api/logs', async (req, res) => {
         type: r[1] || '',
         user: r[2] || '',
         jour,
-        heure: r[4] || '',
+        heure: normalizeTime(r[4] || ''),
         lat: r[6] || '',
         lng: r[7] || ''
       });
