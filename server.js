@@ -615,16 +615,15 @@ app.post('/admin/api/send-report', async (req, res) => {
     doc.end();
     const pdfBuffer = await pdfPromise;
 
-    // Config SMTP
-    const transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST,
-      port: Number(process.env.SMTP_PORT) || 587,
-      secure: false,
-      auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS,
-      },
-    });
+     // Config SMTP pour Gmail
+  const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: process.env.SMTP_USER,
+      pass: process.env.SMTP_PASS,
+    },
+  });
+
 
     await transporter.sendMail({
       from: process.env.SMTP_FROM || process.env.SMTP_USER,
