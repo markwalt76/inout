@@ -399,53 +399,63 @@ window.addEventListener('load', loadDashboard);
   `);
 });
 
-// === ADMIN API : DASHBOARD DATA ============================================
+// === ADMIN API : LISTE DES LOGS POUR EDITION ================================
 
-app.get('/admin/api/dashboard', async (req, res) => {
+app.get('/admin/api/logs', async (req, res) => {
   try {
-    const filterYear = req.query.year ? String(req.query.year) : null;
+    const yearFilter = String(req.query.year || '');
+    const monthFilter = String(req.query.month || '');
     const sheets = await getSheetsClient();
 
     const result = await sheets.spreadsheets.values.get({
       spreadsheetId: SPREADSHEET_ID,
-      range: `${CLEAN_SHEET_NAME}!A2:K`,
+      range: `${RAW_SHEET_NAME}!A2:K`,
     });
 
     const rows = result.data.values || [];
+    const formatted = [];
 
-    const map = new Map(); // key: user-year-month
+    let rowIndex = 2; // index réel dans la feuille
+    for (const r of rows) {
+      const jour = r[3] || ''; // col D = Jour (YYYY-MM-DD)
+      let annee = '';
+      let mois = '';
 
-    for (const row of rows) {
-      const user = row[0] || '';
-      const year = row[2] || '';
-      const month = row[3] || '';
-      const hTrav = row[6] || '';
-      const hSup = row[10] || '';
+      if (jour) {
+        const d = new Date(jour);
+        if (!isNaN(d.getTime())) {
+          annee = String(d.getFullYear());
+          mois = String(d.getMonth() + 1); // 1-12
+        }
+      }
 
-      if (!user || !year || !month) continue;
-      if (filterYear && year !== filterYear) continue;
+      if (yearFilter && annee && annee !== yearFilter) { rowIndex++; continue; }
+      if (monthFilter && mois && mois !== monthFilter) { rowIndex++; continue; }
 
-      const key = `${user}-${year}-${month}`;
-      const current = map.get(key) || { user, year, month, totalHours: 0, totalOvertime: 0 };
+      // si pas de date valide, on ignore
+      if (!jour) { rowIndex++; continue; }
 
-      current.totalHours += timeStringToHours(hTrav);
-      current.totalOvertime += timeStringToHours(hSup);
+      formatted.push({
+        rowIndex,
+        horodatage: r[0] || '',
+        type: r[1] || '',
+        user: r[2] || '',
+        jour,
+        heure: r[4] || '',
+        lat: r[6] || '',
+        lng: r[7] || ''
+      });
 
-      map.set(key, current);
+      rowIndex++;
     }
 
-    const resultRows = Array.from(map.values()).sort((a, b) => {
-      if (a.year !== b.year) return b.year.localeCompare(a.year);
-      if (a.month !== b.month) return Number(b.month) - Number(a.month);
-      return a.user.localeCompare(b.user);
-    });
-
-    res.json({ success: true, rows: resultRows });
+    res.json({ success: true, rows: formatted });
   } catch (err) {
-    console.error('Erreur /admin/api/dashboard :', err);
-    res.status(500).json({ success: false, message: 'Erreur dashboard' });
+    console.error('Erreur /admin/api/logs :', err);
+    res.status(500).json({ success: false, message: 'Erreur lecture logs' });
   }
 });
+
 
 // === ADMIN API : LISTE DES LOGS POUR EDITION ================================
 
