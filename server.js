@@ -1,3 +1,8 @@
+// server.js
+//
+// Backend Check In / Out + Admin
+//
+
 function normalizeTime(str) {
   if (!str) return '';
   const m = String(str).match(/(\d{1,2}):(\d{2})(?::(\d{2}))?/);
@@ -7,10 +12,6 @@ function normalizeTime(str) {
   const s = m[3] || '00';
   return `${h}:${min}:${s}`;
 }
-// server.js
-//
-// Backend Check In / Out + Admin
-//
 
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -27,8 +28,8 @@ const PORT = process.env.PORT || 3000;
 
 // ID de TON Google Sheet
 const SPREADSHEET_ID = '1a41o2i9j2wlesilXL3myTCwuBhUEhtzapoe16JcG4nQ';
-const RAW_SHEET_NAME = 'Logs';       // onglet brut avec Horodatage / Type / etc
-const CLEAN_SHEET_NAME = 'logs_clean'; // onglet consolidé
+const RAW_SHEET_NAME = 'Logs';          // onglet brut avec Horodatage / Type / etc
+const CLEAN_SHEET_NAME = 'logs_clean';  // onglet consolidé
 
 // Clé de service dans une variable d'env (copie du JSON complet)
 const serviceAccountKey = process.env.GOOGLE_SERVICE_ACCOUNT_KEY;
@@ -54,12 +55,16 @@ async function getSheetsClient() {
 
 function timeStringToHours(str) {
   if (!str) return 0;
-  const parts = String(str).split(':');
-  if (parts.length < 2) return 0;
-  const h = parseInt(parts[0], 10) || 0;
-  const m = parseInt(parts[1], 10) || 0;
-  const s = parseInt(parts[2] || '0', 10) || 0;
-  return h + m / 60 + s / 3600;
+  const s = String(str).trim();
+  if (!s) return 0;
+  // si c'est déjà un nombre (6.5, 2, 3,25, etc.)
+  if (/^\d+([.,]\d+)?$/.test(s)) return parseFloat(s.replace(',', '.'));
+  // format HH:MM[:SS]
+  const parts = s.split(':');
+  const h = parseInt(parts[0] || '0', 10) || 0;
+  const m = parseInt(parts[1] || '0', 10) || 0;
+  const sec = parseInt(parts[2] || '0', 10) || 0;
+  return h + m / 60 + sec / 3600;
 }
 
 // === MIDDLEWARES ============================================================
@@ -408,6 +413,39 @@ window.addEventListener('load', loadDashboard);
   `);
 });
 
+// === ADMIN API : DASHBOARD DATA ============================================
+
+app.get('/admin/api/dashboard', async (req, res) => {
+  try {
+    const yearFilter = req.query.year ? String(req.query.year) : '';
+    const sheets = await getSheetsClient();
+
+    // On lit l'onglet "Dashboard" de Google Sheets : A=Utilisateur, B=Annee, C=Mois, D=Total_heures, E=Total_heures_sup
+    const result = await sheets.spreadsheets.values.get({
+      spreadsheetId: SPREADSHEET_ID,
+      range: 'Dashboard!A2:E',
+    });
+
+    const rows = result.data.values || [];
+
+    const data = rows
+      .filter(r => r[0]) // utilisateur non vide
+      .map(r => ({
+        user: r[0],
+        year: String(r[1] || ''),
+        month: String(r[2] || ''),
+        totalHours: timeStringToHours(r[3] || ''),
+        totalOvertime: timeStringToHours(r[4] || ''),
+      }))
+      .filter(r => !yearFilter || r.year === yearFilter);
+
+    res.json({ success: true, rows: data });
+  } catch (err) {
+    console.error('Erreur /admin/api/dashboard :', err);
+    res.status(500).json({ success: false, message: 'Erreur dashboard' });
+  }
+});
+
 // === ADMIN API : LISTE DES LOGS POUR EDITION ================================
 
 app.get('/admin/api/logs', async (req, res) => {
@@ -441,7 +479,6 @@ app.get('/admin/api/logs', async (req, res) => {
       if (yearFilter && annee && annee !== yearFilter) { rowIndex++; continue; }
       if (monthFilter && mois && mois !== monthFilter) { rowIndex++; continue; }
 
-      // si pas de date valide, on ignore
       if (!jour) { rowIndex++; continue; }
 
       formatted.push({
@@ -451,53 +488,6 @@ app.get('/admin/api/logs', async (req, res) => {
         user: r[2] || '',
         jour,
         heure: normalizeTime(r[4] || ''),
-        lat: r[6] || '',
-        lng: r[7] || ''
-      });
-
-      rowIndex++;
-    }
-
-    res.json({ success: true, rows: formatted });
-  } catch (err) {
-    console.error('Erreur /admin/api/logs :', err);
-    res.status(500).json({ success: false, message: 'Erreur lecture logs' });
-  }
-});
-
-
-// === ADMIN API : LISTE DES LOGS POUR EDITION ================================
-
-app.get('/admin/api/logs', async (req, res) => {
-  try {
-    const year = String(req.query.year || '');
-    const month = String(req.query.month || '');
-    const sheets = await getSheetsClient();
-
-    const result = await sheets.spreadsheets.values.get({
-      spreadsheetId: SPREADSHEET_ID,
-      range: `${RAW_SHEET_NAME}!A2:K`,
-    });
-
-    const rows = result.data.values || [];
-    const formatted = [];
-
-    // Index de ligne réel dans la feuille (on commence à 2)
-    let rowIndex = 2;
-    for (const r of rows) {
-      const annee = r[9] || '';   // col J
-      const mois = r[10] || '';   // col K
-
-      if (year && annee !== year) { rowIndex++; continue; }
-      if (month && mois !== month) { rowIndex++; continue; }
-
-      formatted.push({
-        rowIndex,
-        horodatage: r[0] || '',
-        type: r[1] || '',
-        user: r[2] || '',
-        jour: r[3] || '',
-        heure: r[4] || '',
         lat: r[6] || '',
         lng: r[7] || ''
       });
