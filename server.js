@@ -268,11 +268,12 @@ async function loadDashboard() {
 
   data.rows.forEach(row => {
     const tr = document.createElement('tr');
-    tr.innerHTML = '<td>' + row.user + '</td>' +
-                   '<td>' + row.year + '</td>' +
-                   '<td>' + row.month + '</td>' +
-                   '<td>' + row.totalHours.toFixed(2) + '</td>' +
-                   '<td>' + row.totalOvertime.toFixed(2) + '</td>';
+   tr.innerHTML = '<td>' + row.user + '</td>' +
+               '<td>' + row.year + '</td>' +
+               '<td>' + row.month + '</td>' +
+               '<td>' + (row.totalHoursStr || row.totalHours.toFixed(2)) + '</td>' +
+               '<td>' + (row.totalOvertimeStr || row.totalOvertime.toFixed(2)) + '</td>';
+
     tbody.appendChild(tr);
 
     labels.push(row.year + '-' + String(row.month).padStart(2, '0') + ' (' + row.user + ')');
@@ -415,36 +416,8 @@ window.addEventListener('load', loadDashboard);
 
 // === ADMIN API : DASHBOARD DATA ============================================
 
-app.get('/admin/api/dashboard', async (req, res) => {
-  try {
-    const yearFilter = req.query.year ? String(req.query.year) : '';
-    const sheets = await getSheetsClient();
+app.get('/admin/api/dashboard', async (req, res) => {try{const yearFilter=req.query.year?String(req.query.year):'';const sheets=await getSheetsClient();const result=await sheets.spreadsheets.values.get({spreadsheetId:SPREADSHEET_ID,range:'Dashboard!A2:E'});const rows=result.data.values||[];const data=rows.filter(r=>r[0]).map(r=>({user:r[0],year:String(r[1]||''),month:String(r[2]||''),totalHours:timeStringToHours(r[3]||''),totalOvertime:timeStringToHours(r[4]||''),totalHoursStr:r[3]||'',totalOvertimeStr:r[4]||''})).filter(r=>!yearFilter||r.year===yearFilter);res.json({success:true,rows:data});}catch(err){console.error('Erreur /admin/api/dashboard :',err);res.status(500).json({success:false,message:'Erreur dashboard'});}});
 
-    // On lit l'onglet "Dashboard" de Google Sheets : A=Utilisateur, B=Annee, C=Mois, D=Total_heures, E=Total_heures_sup
-    const result = await sheets.spreadsheets.values.get({
-      spreadsheetId: SPREADSHEET_ID,
-      range: 'Dashboard!A2:E',
-    });
-
-    const rows = result.data.values || [];
-
-    const data = rows
-      .filter(r => r[0]) // utilisateur non vide
-      .map(r => ({
-        user: r[0],
-        year: String(r[1] || ''),
-        month: String(r[2] || ''),
-        totalHours: timeStringToHours(r[3] || ''),
-        totalOvertime: timeStringToHours(r[4] || ''),
-      }))
-      .filter(r => !yearFilter || r.year === yearFilter);
-
-    res.json({ success: true, rows: data });
-  } catch (err) {
-    console.error('Erreur /admin/api/dashboard :', err);
-    res.status(500).json({ success: false, message: 'Erreur dashboard' });
-  }
-});
 
 // === ADMIN API : LISTE DES LOGS POUR EDITION ================================
 
