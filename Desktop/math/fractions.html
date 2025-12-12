@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-LTSWTDJ72Z"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-LTSWTDJ72Z');
+</script>
+  <meta charset="UTF-8" />
+  <title>Exercices : Additions et Soustractions de Fractions</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body { font-family: Arial, sans-serif; padding: 10px; font-size: 14px; line-height: 1.6; }
+    h1 { text-align: center; margin-bottom: 4px; font-size: 18px; }
+    .exo { margin: 4px 0; padding: 4px; border: none; border-radius: 0; width: 100%; }
+    .fraction { display: inline-block; text-align: center; margin: 0 5px; vertical-align: middle; }
+    .fraction span { display: block; font-size: 16px; line-height: 1.4; }
+    .fraction .den { border-top: 1px solid #000; }
+    button { margin-top: 10px; padding: 6px 12px; font-size: 12px; cursor: pointer; }
+    @page { size: A4 portrait; margin: 10mm; }
+    @media print {
+      button { display: none; }
+      .exo { page-break-inside: avoid; border: none; }
+      body { padding: 0; font-size: 11px; }
+    }
+    #container { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); column-gap: 10px; row-gap: 8px; }
+    .op { display: inline-block; font-weight: normal; font-size: 16px; position: relative; top: -2px; margin: 0 4px; }
+    .cmp { display:inline-block; font-weight:bold; font-size:16px; margin:0 4px; position:relative; top:-2px; }
+    .result { position:relative; top:-4px; }
+    .controls { margin-bottom:8px; font-size:12px; display:flex; flex-wrap:wrap; gap:8px 12px; align-items:center; }
+    .controls label { white-space:nowrap; }
+    .controls .spacer { flex:1; }
+    .tips-link { font-size:12px; text-decoration:none; color:#2563eb; }
+    .tips-link:hover { text-decoration:underline; }
+    .corr { color:#b91c1c; font-weight:bold; }
+  </style>
+</head>
+<body>
+  <h1>Exercices : Fractions (Dénominateur Commun)</h1>
+  <div class="controls">
+    <label><input type="radio" name="type_exo" value="mix" checked> Mélange (70% opérations / 30% comparaisons)</label>
+    <label><input type="radio" name="type_exo" value="op"> Opérations seulement</label>
+    <label><input type="radio" name="type_exo" value="cmp"> Comparaisons seulement</label>
+    <span class="spacer"></span>
+    <a href="tips.html" target="_blank" class="tips-link">Tips ↗</a>
+  </div>
+  <div id="container"></div>
+  <button onclick="genererExercices()">Générer de nouveaux exercices</button>
+  <button onclick="corrigerExercices()">Corriger automatiquement</button>
+  <button onclick="window.print()">Exporter en PDF</button>
+
+  <script>
+    function frac(n, d) {
+      return `<span class='fraction'><span>${n}</span><span class='den'>${d}</span></span>`;
+    }
+
+    // Génère un mélange d'opérations et de comparaisons
+    function genererExercices() {
+      const cont = document.getElementById('container');
+      cont.innerHTML = '';
+
+      const radios = document.querySelector('input[name="type_exo"]:checked');
+      const mode = radios ? radios.value : 'mix';
+
+      for (let i = 0; i < 40; i++) {
+        let type;
+        if (mode === 'op') {
+          type = 'op';
+        } else if (mode === 'cmp') {
+          type = 'cmp';
+        } else {
+          type = Math.random() < 0.7 ? 'op' : 'cmp'; // 70% / 30%
+        }
+
+        // dénominateur de base
+        let denom;
+        if (Math.random() < 0.4) {
+          denom = Math.floor(Math.random() * 11) + 2;  // 2 à 12
+        } else {
+          denom = Math.floor(Math.random() * 900) + 10; // 10 à 909
+        }
+
+        const a = Math.floor(Math.random() * denom) + 1;
+        const b = Math.floor(Math.random() * denom) + 1;
+
+        const exo = document.createElement('div');
+        exo.className = 'exo';
+        exo.dataset.type = type;
+        exo.dataset.denom = denom;
+        exo.dataset.a = a;
+        exo.dataset.b = b;
+
+        if (type === 'op') {
+          const op = Math.random() > 0.5 ? '+' : '-';
+          exo.dataset.op = op;
+          exo.innerHTML = `${frac(a, denom)} <span class='op'>${op}</span> ${frac(b, denom)} = <span class='result'>____</span>`;
+        } else {
+          // COMPARAISONS : soit numérateur identique, soit dénominateur identique
+          const modeCmp = Math.random() < 0.5 ? 'sameNum' : 'sameDen';
+
+          let denom2;
+          let num2;
+
+          if (modeCmp === 'sameNum') {
+            // numérateur identique, dénominateurs différents
+            denom2 = Math.random() < 0.4
+              ? (Math.floor(Math.random() * 11) + 2)
+              : (Math.floor(Math.random() * 900) + 10);
+            num2 = a;
+            exo.dataset.cmpMode = 'sameNum';
+          } else {
+            // dénominateur identique, numérateurs différents
+            denom2 = denom;
+            num2 = Math.floor(Math.random() * denom) + 1;
+            exo.dataset.cmpMode = 'sameDen';
+          }
+
+          exo.dataset.num2 = num2;
+          exo.dataset.denom2 = denom2;
+
+          exo.innerHTML = `${frac(a, denom)} <span class="cmp">...</span> ${frac(num2, denom2)}`;
+        }
+
+        cont.appendChild(exo);
+      }
+    }
+
+    function corrigerExercices() {
+      const items = document.querySelectorAll('.exo');
+      items.forEach(exo => {
+        // supprimer éventuelle correction précédente
+        const oldCorr = exo.querySelector('.corr');
+        if (oldCorr) oldCorr.remove();
+
+        const type = exo.dataset.type;
+        if (type === 'op') {
+          const a = parseInt(exo.dataset.a, 10);
+          const b = parseInt(exo.dataset.b, 10);
+          const d = parseInt(exo.dataset.denom, 10);
+          const op = exo.dataset.op;
+          const res = op === '+' ? a + b : a - b;
+
+          const resSpan = exo.querySelector('.result');
+          if (resSpan) {
+            resSpan.innerHTML = `<span class='corr'>${"<span class='fraction'><span>" + res + "</span><span class='den'>" + d + "</span></span>"}</span>`;
+          } else {
+            const corrSpan = document.createElement('span');
+            corrSpan.className = 'corr';
+            corrSpan.innerHTML = ` → <span class='corr'><span class='fraction'><span>${res}</span><span class='den'>${d}</span></span></span>`;
+            exo.appendChild(corrSpan);
+          }
+        } else {
+          const a = parseInt(exo.dataset.a, 10);
+          const num2 = parseInt(exo.dataset.num2, 10);
+          const d1 = parseInt(exo.dataset.denom, 10);
+          const d2 = parseInt(exo.dataset.denom2, 10);
+
+          let sign;
+          const v1 = a / d1;
+          const v2 = num2 / d2;
+          if (v1 > v2) sign = '>';
+          else if (v1 < v2) sign = '<';
+          else sign = '=';
+
+          const cmpSpan = exo.querySelector('.cmp');
+          if (cmpSpan) {
+            cmpSpan.innerHTML = `<span class='corr'>${sign}</span>`;
+          } else {
+            const corrSpan = document.createElement('span');
+            corrSpan.className = 'corr';
+            corrSpan.textContent = ` → ${sign}`;
+            exo.appendChild(corrSpan);
+          }
+        }
+      });
+    }
+
+    genererExercices();
+  </script>
+</body>
+</html>

@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Symétrie – Math CE2</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Google Analytics (GA4) -->
+  <!-- Remplace G-XXXXXXXXXX par ton identifiant de mesure -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-XXXXXXXXXX');
+  </script>
+
+  <style>
+    * { box-sizing: border-box; font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: radial-gradient(circle at top, #e0f2fe, #eff6ff);
+      display: flex;
+      justify-content: center;
+      padding: 1.5rem;
+    }
+    .app {
+      background: white;
+      border-radius: 1.5rem;
+      padding: 2rem 2.2rem;
+      max-width: 1000px;
+      width: 100%;
+      box-shadow: 0 20px 40px rgba(15, 23, 42, 0.12);
+    }
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    h1 {
+      margin: 0;
+      font-size: 1.7rem;
+      color: #0f172a;
+    }
+    .subtitle {
+      margin: 0.15rem 0 0;
+      color: #64748b;
+      font-size: 0.95rem;
+    }
+    .back-link {
+      text-decoration: none;
+      font-size: 0.9rem;
+      color: #3b82f6;
+      border-radius: 999px;
+      padding: 0.4rem 0.9rem;
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+    }
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+    button {
+      border-radius: 999px;
+      border: none;
+      padding: 0.55rem 1.1rem;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    #btn-new {
+      background: #3b82f6;
+      color: white;
+    }
+    #btn-corr {
+      background: #0f172a;
+      color: white;
+    }
+    .hint {
+      font-size: 0.9rem;
+      color: #64748b;
+      margin-bottom: 1rem;
+    }
+    .exos {
+      display: grid;
+      gap: 1rem;
+    }
+    .exo {
+      border-radius: 1rem;
+      padding: 1rem 1.2rem;
+      border: 1px solid #e2e8f0;
+      background: #f8fafc;
+    }
+    .exo-title {
+      font-weight: 600;
+      margin-bottom: 0.3rem;
+      color: #0f172a;
+    }
+    .exo-type {
+      font-size: 0.8rem;
+      display: inline-block;
+      padding: 0.1rem 0.5rem;
+      border-radius: 999px;
+      background: #e0f2fe;
+      color: #0369a1;
+      margin-bottom: 0.4rem;
+    }
+    .question {
+      font-size: 0.95rem;
+      color: #1f2933;
+    }
+    .correction {
+      font-size: 0.9rem;
+      color: #b91c1c;
+      margin-top: 0.3rem;
+      display: none;
+    }
+    .show .correction {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header>
+      <div>
+        <h1>Symétrie</h1>
+        <p class="subtitle">
+          Symétrie axiale et centrale : trouve les coordonnées du point image.
+        </p>
+      </div>
+      <a href="index.html" class="back-link">← Retour au menu</a>
+    </header>
+
+    <section class="toolbar">
+      <button id="btn-new">Nouveaux exercices</button>
+      <button id="btn-corr">Afficher / cacher les corrections</button>
+    </section>
+
+    <p class="hint">
+      ➤ Pour chaque exercice, calcule les coordonnées du point image A′.<br>
+      Symétrie axiale :<br>
+      • axe <strong>x = k</strong> : A(x ; y) → A′(2k − x ; y)<br>
+      • axe <strong>y = k</strong> : A(x ; y) → A′(x ; 2k − y)<br>
+      Symétrie centrale :<br>
+      • centre <strong>O(h ; k)</strong> : A(x ; y) → A′(2h − x ; 2k − y)
+    </p>
+
+    <section id="exos" class="exos"></section>
+  </main>
+
+  <script>
+    function randInt(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function generateAxial() {
+      const axisType = Math.random() < 0.5 ? "x" : "y";
+      const k = randInt(-3, 3);
+      const x = randInt(-5, 5);
+      const y = randInt(-5, 5);
+
+      let xp = x, yp = y;
+      let wordingAxis;
+      if (axisType === "x") {
+        xp = 2 * k - x;
+        wordingAxis = `x = ${k}`;
+      } else {
+        yp = 2 * k - y;
+        wordingAxis = `y = ${k}`;
+      }
+
+      return {
+        type: "axiale",
+        title: "Symétrie axiale",
+        question: `Soit A(${x} ; ${y}) et l’axe (d) : ${wordingAxis}. Donner les coordonnées de A′, image de A par la symétrie d’axe (d).`,
+        correction: `A′(${xp} ; ${yp})`
+      };
+    }
+
+    function generateCentral() {
+      const h = randInt(-3, 3);
+      const k = randInt(-3, 3);
+      const x = randInt(-5, 5);
+      const y = randInt(-5, 5);
+
+      const xp = 2 * h - x;
+      const yp = 2 * k - y;
+
+      return {
+        type: "centrale",
+        title: "Symétrie centrale",
+        question: `Soit O(${h} ; ${k}) le centre de symétrie et A(${x} ; ${y}). Donner les coordonnées de A′, image de A par la symétrie de centre O.`,
+        correction: `A′(${xp} ; ${yp})`
+      };
+    }
+
+    function generateAll() {
+      const container = document.getElementById("exos");
+      container.innerHTML = "";
+
+      const exos = [];
+      // 3 axiales + 3 centrales
+      for (let i = 0; i < 3; i++) exos.push(generateAxial());
+      for (let i = 0; i < 3; i++) exos.push(generateCentral());
+
+      // Mélange
+      for (let i = exos.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [exos[i], exos[j]] = [exos[j], exos[i]];
+      }
+
+      exos.forEach((exo, index) => {
+        const div = document.createElement("article");
+        div.className = "exo";
+        div.innerHTML = `
+          <div class="exo-type">${exo.type === "axiale" ? "Symétrie axiale" : "Symétrie centrale"}</div>
+          <div class="exo-title">Exercice ${index + 1}</div>
+          <p class="question">${exo.question}</p>
+          <p class="correction"><strong>Correction :</strong> ${exo.correction}</p>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function toggleCorrections() {
+      const exos = document.querySelectorAll(".exo");
+      exos.forEach(exo => exo.classList.toggle("show"));
+    }
+
+    document.getElementById("btn-new").addEventListener("click", generateAll);
+    document.getElementById("btn-corr").addEventListener("click", toggleCorrections);
+
+    // Génère une première série au chargement
+    generateAll();
+  </script>
+</body>
+</html>

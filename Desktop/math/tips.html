@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Correction – Exercices de fractions</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: #f3f4f6;
+      color: #111827;
+    }
+
+    .wrap {
+      max-width: 900px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 12px;
+      padding: 18px 18px 24px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+    }
+
+    h1 {
+      text-align: center;
+      margin: 0 0 6px;
+      font-size: 22px;
+      letter-spacing: 0.03em;
+    }
+
+    .subtitle {
+      text-align: center;
+      font-size: 13px;
+      color: #6b7280;
+      margin-bottom: 18px;
+    }
+
+    h2 {
+      font-size: 16px;
+      margin-top: 18px;
+      margin-bottom: 8px;
+      border-left: 3px solid #2563eb;
+      padding-left: 6px;
+    }
+
+    p {
+      font-size: 14px;
+      margin: 4px 0 8px;
+    }
+
+    .rule {
+      background: #f9fafb;
+      border-radius: 8px;
+      padding: 8px 10px;
+      margin-bottom: 10px;
+      border: 1px solid #e5e7eb;
+    }
+
+    .examples {
+      border-collapse: collapse;
+      width: 100%;
+      font-size: 14px;
+      margin-top: 6px;
+    }
+
+    .examples th,
+    .examples td {
+      border: 1px solid #e5e7eb;
+      padding: 6px 8px;
+      text-align: left;
+    }
+
+    .examples th {
+      background: #f3f4f6;
+      font-weight: 600;
+    }
+
+    .back-link {
+      margin-top: 16px;
+      font-size: 13px;
+      text-align: right;
+    }
+
+    .back-link a {
+      color: #2563eb;
+      text-decoration: none;
+    }
+
+    .back-link a:hover {
+      text-decoration: underline;
+    }
+
+    .frac {
+      display: inline-block;
+      text-align: center;
+    }
+    .frac span {
+      display: block;
+      line-height: 1.1;
+    }
+    .frac .den {
+      border-top: 1px solid #000;
+    }
+
+    @media print {
+      body {
+        background: white;
+        padding: 0;
+      }
+      .wrap {
+        box-shadow: none;
+        border-radius: 0;
+        padding: 10mm;
+      }
+      .back-link {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Correction – Fractions</h1>
+    <div class="subtitle">Rappels de cours et exemples corrigés</div>
+
+    <h2>1. Addition de fractions avec dénominateur commun</h2>
+    <div class="rule">
+      <p><strong>Règle :</strong> pour additionner deux fractions qui ont le même dénominateur, on :</p>
+      <ul style="margin:4px 0 0 18px; padding:0;">
+        <li>garde le <strong>dénominateur</strong> ;</li>
+        <li>additionne les <strong>numérateurs</strong>.</li>
+      </ul>
+      <p style="margin-top:6px;">
+        Exemple : 
+        <span class="frac"><span>3</span><span class="den">8</span></span>
+        +
+        <span class="frac"><span>4</span><span class="den">8</span></span>
+        =
+        <span class="frac"><span>3 + 4 = 7</span><span class="den">8</span></span>
+      </p>
+    </div>
+
+    <table class="examples">
+      <tr><th>Énoncé</th><th>Correction</th></tr>
+      <tr>
+        <td>
+          <span class="frac"><span>5</span><span class="den">9</span></span>
+          +
+          <span class="frac"><span>2</span><span class="den">9</span></span>
+        </td>
+        <td>
+          <span class="frac"><span>7</span><span class="den">9</span></span>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <span class="frac"><span>11</span><span class="den">20</span></span>
+          +
+          <span class="frac"><span>3</span><span class="den">20</span></span>
+        </td>
+        <td>
+          <span class="frac"><span>14</span><span class="den">20</span></span>
+          = 
+          <span class="frac"><span>7</span><span class="den">10</span></span>
+          (fraction simplifiée)
+        </td>
+      </tr>
+    </table>
+
+    <h2>2. Soustraction de fractions avec dénominateur commun</h2>
+    <div class="rule">
+      <p><strong>Règle :</strong> pour soustraire deux fractions qui ont le même dénominateur, on :</p>
+      <ul style="margin:4px 0 0 18px; padding:0;">
+        <li>garde le <strong>dénominateur</strong> ;</li>
+        <li>soustrait les <strong>numérateurs</strong>.</li>
+      </ul>
+      <p style="margin-top:6px;">
+        Exemple : 
+        <span class="frac"><span>7</span><span class="den">10</span></span>
+        −
+        <span class="frac"><span>3</span><span class="den">10</span></span>
+        =
+        <span class="frac"><span>7 − 3 = 4</span><span class="den">10</span></span>
+        =
+        <span class="frac"><span>2</span><span class="den">5</span></span>
+      </p>
+    </div>
+
+    <table class="examples">
+      <tr><th>Énoncé</th><th>Correction</th></tr>
+      <tr>
+        <td>
+          <span class="frac"><span>9</span><span class="den">13</span></span>
+          −
+          <span class="frac"><span>4</span><span class="den">13</span></span>
+        </td>
+        <td>
+          <span class="frac"><span>5</span><span class="den">13</span></span>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <span class="frac"><span>15</span><span class="den">16</span></span>
+          −
+          <span class="frac"><span>7</span><span class="den">16</span></span>
+        </td>
+        <td>
+          <span class="frac"><span>8</span><span class="den">16</span></span>
+          =
+          <span class="frac"><span>1</span><span class="den">2</span></span>
+        </td>
+      </tr>
+    </table>
+
+    <h2>3. Comparer deux fractions : même dénominateur</h2>
+    <div class="rule">
+      <p><strong>Règle :</strong> si deux fractions ont le même dénominateur :</p>
+      <ul style="margin:4px 0 0 18px; padding:0;">
+        <li>c’est le plus grand <strong>numérateur</strong> qui donne la plus grande fraction.</li>
+      </ul>
+      <p style="margin-top:6px;">
+        Exemple :
+        <span class="frac"><span>5</span><span class="den">12</span></span>
+        &gt;
+        <span class="frac"><span>3</span><span class="den">12</span></span>
+        (car 5 &gt; 3)
+      </p>
+    </div>
+
+    <table class="examples">
+      <tr><th>Énoncé</th><th>Comparaison</th></tr>
+      <tr>
+        <td>
+          <span class="frac"><span>7</span><span class="den">25</span></span>
+          … 
+          <span class="frac"><span>11</span><span class="den">25</span></span>
+        </td>
+        <td>
+          <span class="frac"><span>7</span><span class="den">25</span></span>
+          &lt;
+          <span class="frac"><span>11</span><span class="den">25</span></span>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <span class="frac"><span>13</span><span class="den">40</span></span>
+          …
+          <span class="frac"><span>9</span><span class="den">40</span></span>
+        </td>
+        <td>
+          <span class="frac"><span>13</span><span class="den">40</span></span>
+          &gt;
+          <span class="frac"><span>9</span><span class="den">40</span></span>
+        </td>
+      </tr>
+    </table>
+
+    <h2>4. Comparer deux fractions : même numérateur</h2>
+    <div class="rule">
+      <p><strong>Règle :</strong> si deux fractions ont le même numérateur :</p>
+      <ul style="margin:4px 0 0 18px; padding:0;">
+        <li>c’est le plus petit <strong>dénominateur</strong> qui donne la plus grande fraction.</li>
+      </ul>
+      <p style="margin-top:6px;">
+        Exemple :
+        <span class="frac"><span>3</span><span class="den">5</span></span>
+        &gt;
+        <span class="frac"><span>3</span><span class="den">8</span></span>
+        (car 1/5 est plus grand que 1/8)
+      </p>
+    </div>
+
+    <table class="examples">
+      <tr><th>Énoncé</th><th>Comparaison</th></tr>
+      <tr>
+        <td>
+          <span class="frac"><span>4</span><span class="den">9</span></span>
+          …
+          <span class="frac"><span>4</span><span class="den">15</span></span>
+        </td>
+        <td>
+          <span class="frac"><span>4</span><span class="den">9</span></span>
+          &gt;
+          <span class="frac"><span>4</span><span class="den">15</span></span>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <span class="frac"><span>7</span><span class="den">18</span></span>
+          …
+          <span class="frac"><span>7</span><span class="den">25</span></span>
+        </td>
+        <td>
+          <span class="frac"><span>7</span><span class="den">18</span></span>
+          &gt;
+          <span class="frac"><span>7</span><span class="den">25</span></span>
+        </td>
+      </tr>
+    </table>
+
+    <div class="back-link">
+      <a href="index.html">⬅ Retour à la page d’exercices</a>
+    </div>
+  </div>
+</body>
+</html>
