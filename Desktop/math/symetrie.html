@@ -1,12 +1,11 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <title>Symétrie – Math CE2</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Math CE2 – Reproduction sur quadrillage</title>
 
-  <!-- Google Analytics (GA4) -->
-  <!-- Remplace G-XXXXXXXXXX par ton identifiant de mesure -->
+  <!-- Google Analytics (GA4) : remplace l'ID -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
@@ -16,228 +15,402 @@
   </script>
 
   <style>
-    * { box-sizing: border-box; font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
-    body {
-      margin: 0;
-      min-height: 100vh;
-      background: radial-gradient(circle at top, #e0f2fe, #eff6ff);
-      display: flex;
-      justify-content: center;
-      padding: 1.5rem;
+    * { box-sizing: border-box; font-family: system-ui, -apple-system, Segoe UI, sans-serif; }
+    body { margin:0; background: radial-gradient(circle at top, #e0f2fe, #eff6ff); padding: 18px; }
+    .app { max-width: 1100px; margin: 0 auto; background: #fff; border-radius: 18px; padding: 18px 18px 10px; box-shadow: 0 20px 40px rgba(15,23,42,.12); }
+    header { display:flex; gap:12px; align-items:flex-start; justify-content:space-between; flex-wrap: wrap; }
+    h1 { margin:0; font-size: 1.6rem; color:#0f172a; }
+    .sub { margin:4px 0 0; color:#64748b; font-size:.95rem; }
+    .pill { display:inline-block; padding:4px 10px; border-radius: 999px; background:#eff6ff; border:1px solid #bfdbfe; color:#1d4ed8; font-size:.85rem; text-decoration:none; }
+    .toolbar { display:flex; flex-wrap: wrap; gap:10px; margin: 14px 0 10px; align-items:center; }
+    select, button { border-radius:999px; border:1px solid #e2e8f0; padding:10px 14px; font-weight:600; background:#fff; cursor:pointer; }
+    button.primary { background:#3b82f6; color:#fff; border:none; }
+    button.dark { background:#0f172a; color:#fff; border:none; }
+    button:disabled { opacity:.5; cursor:not-allowed; }
+    .note { color:#64748b; font-size:.9rem; margin: 8px 0 14px; }
+    .grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap:12px; }
+    .card { border:1px solid #e2e8f0; background:#f8fafc; border-radius:14px; padding:12px; }
+    .card h3 { margin:0 0 6px; font-size:1rem; color:#0f172a; }
+    .pair { display:grid; grid-template-columns: 1fr 1fr; gap:10px; align-items:start; }
+    .canvasWrap { background:#fff; border:1px solid #e2e8f0; border-radius:12px; padding:8px; }
+    canvas { width:100%; height:auto; display:block; }
+    .legend { display:flex; gap:8px; align-items:center; justify-content:space-between; margin-top:8px; color:#475569; font-size:.85rem; }
+    .tag { display:inline-block; padding:2px 8px; border-radius:999px; background:#e0f2fe; color:#0369a1; }
+    .hidden { display:none; }
+
+    /* Impression / PDF */
+    @media print {
+      body { background:#fff; padding:0; }
+      .app { box-shadow:none; border-radius:0; padding:0; }
+      header, .toolbar, .note, .screenOnly { display:none !important; }
+      .printTitle { display:block !important; padding:14px 0 8px; }
+      .card { break-inside: avoid; page-break-inside: avoid; }
+      .pageBreak { page-break-before: always; break-before: page; }
+      .grid { grid-template-columns: 1fr 1fr; gap:10px; }
     }
-    .app {
-      background: white;
-      border-radius: 1.5rem;
-      padding: 2rem 2.2rem;
-      max-width: 1000px;
-      width: 100%;
-      box-shadow: 0 20px 40px rgba(15, 23, 42, 0.12);
-    }
-    header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 1rem;
-      margin-bottom: 1.5rem;
-    }
-    h1 {
-      margin: 0;
-      font-size: 1.7rem;
-      color: #0f172a;
-    }
-    .subtitle {
-      margin: 0.15rem 0 0;
-      color: #64748b;
-      font-size: 0.95rem;
-    }
-    .back-link {
-      text-decoration: none;
-      font-size: 0.9rem;
-      color: #3b82f6;
-      border-radius: 999px;
-      padding: 0.4rem 0.9rem;
-      background: #eff6ff;
-      border: 1px solid #bfdbfe;
-    }
-    .toolbar {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.75rem;
-      margin-bottom: 1.5rem;
-    }
-    button {
-      border-radius: 999px;
-      border: none;
-      padding: 0.55rem 1.1rem;
-      font-size: 0.95rem;
-      font-weight: 600;
-      cursor: pointer;
-    }
-    #btn-new {
-      background: #3b82f6;
-      color: white;
-    }
-    #btn-corr {
-      background: #0f172a;
-      color: white;
-    }
-    .hint {
-      font-size: 0.9rem;
-      color: #64748b;
-      margin-bottom: 1rem;
-    }
-    .exos {
-      display: grid;
-      gap: 1rem;
-    }
-    .exo {
-      border-radius: 1rem;
-      padding: 1rem 1.2rem;
-      border: 1px solid #e2e8f0;
-      background: #f8fafc;
-    }
-    .exo-title {
-      font-weight: 600;
-      margin-bottom: 0.3rem;
-      color: #0f172a;
-    }
-    .exo-type {
-      font-size: 0.8rem;
-      display: inline-block;
-      padding: 0.1rem 0.5rem;
-      border-radius: 999px;
-      background: #e0f2fe;
-      color: #0369a1;
-      margin-bottom: 0.4rem;
-    }
-    .question {
-      font-size: 0.95rem;
-      color: #1f2933;
-    }
-    .correction {
-      font-size: 0.9rem;
-      color: #b91c1c;
-      margin-top: 0.3rem;
-      display: none;
-    }
-    .show .correction {
-      display: block;
-    }
+    .printTitle { display:none; }
   </style>
 </head>
+
 <body>
   <main class="app">
     <header>
       <div>
-        <h1>Symétrie</h1>
-        <p class="subtitle">
-          Symétrie axiale et centrale : trouve les coordonnées du point image.
-        </p>
+        <h1>Reproduction sur quadrillage</h1>
+        <p class="sub">Observe le modèle, repère les sommets (cases à droite/gauche – haut/bas), puis reproduis la figure.</p>
       </div>
-      <a href="index.html" class="back-link">← Retour au menu</a>
+      <a class="pill" href="index.html">← Retour menu</a>
     </header>
 
-    <section class="toolbar">
-      <button id="btn-new">Nouveaux exercices</button>
-      <button id="btn-corr">Afficher / cacher les corrections</button>
-    </section>
+    <div class="toolbar screenOnly">
+      <label>
+        Niveau :
+        <select id="level">
+          <option value="1">Niveau 1 — facile</option>
+          <option value="2" selected>Niveau 2 — moyen (comme la fiche)</option>
+          <option value="3">Niveau 3 — reproduction + symétrie</option>
+        </select>
+      </label>
 
-    <p class="hint">
-      ➤ Pour chaque exercice, calcule les coordonnées du point image A′.<br>
-      Symétrie axiale :<br>
-      • axe <strong>x = k</strong> : A(x ; y) → A′(2k − x ; y)<br>
-      • axe <strong>y = k</strong> : A(x ; y) → A′(x ; 2k − y)<br>
-      Symétrie centrale :<br>
-      • centre <strong>O(h ; k)</strong> : A(x ; y) → A′(2h − x ; 2k − y)
+      <label>
+        Exercices :
+        <select id="count">
+          <option value="4">4</option>
+          <option value="6" selected>6</option>
+          <option value="8">8</option>
+        </select>
+      </label>
+
+      <button class="primary" id="btnNew">Nouveaux exercices</button>
+      <button class="dark" id="btnCorr">Afficher / cacher correction</button>
+      <button id="btnPrint">Imprimer / PDF</button>
+    </div>
+
+    <p class="note screenOnly">
+      Astuce : commence par placer les <strong>sommets</strong>. Pour tracer un côté, compte les cases <strong>horizontalement</strong> puis <strong>verticalement</strong>.
     </p>
 
-    <section id="exos" class="exos"></section>
+    <div class="printTitle">
+      <h2 style="margin:0;">Math CE2 — Reproduction sur quadrillage</h2>
+      <p style="margin:6px 0 0; color:#334155;">Nom : ____________  Date : ____ / ____ / ______</p>
+    </div>
+
+    <section id="exercises" class="grid"></section>
+
+    <div class="pageBreak"></div>
+
+    <div class="printTitle">
+      <h2 style="margin:0;">Correction — Reproduction sur quadrillage</h2>
+    </div>
+
+    <section id="corrections" class="grid"></section>
   </main>
 
-  <script>
-    function randInt(min, max) {
-      return Math.floor(Math.random() * (max - min + 1)) + min;
+<script>
+  // --------- utils ----------
+  function randInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+  function clamp(v, a, b){ return Math.max(a, Math.min(b, v)); }
+
+  // grille
+  const cells = 14;              // 14x14 cases
+  const cellSize = 20;           // px
+  const pad = 10;                // marge
+  const W = pad*2 + cells*cellSize;
+  const H = pad*2 + cells*cellSize;
+
+  function drawGrid(ctx) {
+    ctx.clearRect(0,0,W,H);
+    ctx.beginPath();
+    for (let i=0; i<=cells; i++){
+      ctx.moveTo(pad + i*cellSize, pad);
+      ctx.lineTo(pad + i*cellSize, pad + cells*cellSize);
+      ctx.moveTo(pad, pad + i*cellSize);
+      ctx.lineTo(pad + cells*cellSize, pad + i*cellSize);
+    }
+    ctx.strokeStyle = "#cbd5e1";
+    ctx.lineWidth = 1;
+    ctx.stroke();
+  }
+
+  function toPx(p){ return { x: pad + p.x*cellSize, y: pad + p.y*cellSize }; }
+
+  function drawPolygon(ctx, pts, color, lineWidth=3){
+    if (!pts || pts.length < 2) return;
+    const a = toPx(pts[0]);
+    ctx.beginPath();
+    ctx.moveTo(a.x, a.y);
+    for (let i=1; i<pts.length; i++){
+      const b = toPx(pts[i]);
+      ctx.lineTo(b.x, b.y);
+    }
+    ctx.closePath();
+    ctx.strokeStyle = color;
+    ctx.lineWidth = lineWidth;
+    ctx.stroke();
+  }
+
+  function drawPoints(ctx, pts, color){
+    ctx.fillStyle = color;
+    pts.forEach(p => {
+      const q = toPx(p);
+      ctx.beginPath();
+      ctx.arc(q.x, q.y, 3.5, 0, Math.PI*2);
+      ctx.fill();
+    });
+  }
+
+  // --------- génération de figures ---------
+  // Les points sont en coordonnées de "cases" : 0..cells
+  function genLevel1(){
+    // triangle simple, bien dans la grille
+    const x0 = randInt(3, 10), y0 = randInt(3, 10);
+    const p0 = {x:x0, y:y0};
+    const p1 = {x: clamp(x0 + randInt(2,4), 2, 12), y: clamp(y0 + randInt(-3,3), 2, 12)};
+    const p2 = {x: clamp(x0 + randInt(-3,3), 2, 12), y: clamp(y0 + randInt(2,4), 2, 12)};
+    return [p0,p1,p2];
+  }
+
+  function genLevel2(){
+    // polygone 5-6 sommets (style “fiche”)
+    const n = Math.random() < 0.5 ? 5 : 6;
+    let x = randInt(4, 10), y = randInt(4, 10);
+    const pts = [{x, y}];
+
+    // déplacements entiers (cases) pour construire une forme non auto-croisée la plupart du temps
+    const steps = [
+      () => ({dx: randInt(2,4), dy: randInt(-2,2)}),
+      () => ({dx: randInt(-1,2), dy: randInt(2,4)}),
+      () => ({dx: randInt(-4,-2), dy: randInt(0,3)}),
+      () => ({dx: randInt(-2,1), dy: randInt(-4,-2)}),
+      () => ({dx: randInt(1,3), dy: randInt(-2,1)}),
+      () => ({dx: randInt(-3,3), dy: randInt(-3,3)})
+    ];
+
+    for(let i=1;i<n;i++){
+      const s = steps[i-1]();
+      x = clamp(x + s.dx, 2, 12);
+      y = clamp(y + s.dy, 2, 12);
+      pts.push({x,y});
+    }
+    return pts;
+  }
+
+  function mirrorVertical(pts, axisX){
+    // symétrie axiale par rapport à la droite x = axisX (en unités "cases")
+    return pts.map(p => ({ x: 2*axisX - p.x, y: p.y }));
+  }
+
+  function genLevel3(){
+    // on génère une figure (niveau2) et on demande de reproduire son image symétrique
+    const base = genLevel2();
+    const axisX = randInt(6,8); // axe vertical au milieu
+    const img = mirrorVertical(base, axisX);
+    return { base, axisX, img };
+  }
+
+  // --------- rendu d'un exercice ---------
+  function makeCanvas(){
+    const c = document.createElement("canvas");
+    c.width = W; c.height = H;
+    return c;
+  }
+
+  function renderExerciseCard(index, level){
+    const card = document.createElement("article");
+    card.className = "card";
+
+    const title = document.createElement("h3");
+    title.textContent = `Exercice ${index+1}`;
+    card.appendChild(title);
+
+    const pair = document.createElement("div");
+    pair.className = "pair";
+    card.appendChild(pair);
+
+    const left = document.createElement("div");
+    left.className = "canvasWrap";
+    const right = document.createElement("div");
+    right.className = "canvasWrap";
+
+    const cModel = makeCanvas();
+    const cBlank = makeCanvas();
+    left.appendChild(cModel);
+    right.appendChild(cBlank);
+
+    pair.appendChild(left);
+    pair.appendChild(right);
+
+    const legend = document.createElement("div");
+    legend.className = "legend";
+    legend.innerHTML = `<span class="tag">Modèle</span><span class="tag">À reproduire</span>`;
+    card.appendChild(legend);
+
+    const ctxM = cModel.getContext("2d");
+    const ctxB = cBlank.getContext("2d");
+
+    drawGrid(ctxM); drawGrid(ctxB);
+
+    let pts;
+    let axisX = null;
+    let prompt = "";
+
+    if (level === 1){
+      pts = genLevel1();
+      prompt = "Reproduis la figure sur le quadrillage vide.";
+      drawPolygon(ctxM, pts, "#0f172a", 3);
+      drawPoints(ctxM, pts, "#0f172a");
+    } else if (level === 2){
+      pts = genLevel2();
+      prompt = "Reproduis la figure sur le quadrillage vide (place d’abord les sommets).";
+      drawPolygon(ctxM, pts, "#0f172a", 3);
+      drawPoints(ctxM, pts, "#0f172a");
+    } else {
+      const o = genLevel3();
+      pts = o.base;
+      axisX = o.axisX;
+      prompt = `Trace l’image de la figure par symétrie d’axe vertical x = ${axisX} (en cases).`;
+      // modèle = figure + axe
+      drawPolygon(ctxM, pts, "#0f172a", 3);
+      drawPoints(ctxM, pts, "#0f172a");
+      // axe
+      ctxM.beginPath();
+      const ax = pad + axisX*cellSize;
+      ctxM.moveTo(ax, pad);
+      ctxM.lineTo(ax, pad + cells*cellSize);
+      ctxM.strokeStyle = "#94a3b8";
+      ctxM.setLineDash([6,4]);
+      ctxM.lineWidth = 2;
+      ctxM.stroke();
+      ctxM.setLineDash([]);
+
+      // pour la correction, la bonne figure sera o.img
+      card._solutionPts = o.img;
+      card._axisX = axisX;
     }
 
-    function generateAxial() {
-      const axisType = Math.random() < 0.5 ? "x" : "y";
-      const k = randInt(-3, 3);
-      const x = randInt(-5, 5);
-      const y = randInt(-5, 5);
+    const p = document.createElement("p");
+    p.className = "note";
+    p.style.margin = "10px 0 0";
+    p.style.color = "#334155";
+    p.textContent = prompt;
+    card.appendChild(p);
 
-      let xp = x, yp = y;
-      let wordingAxis;
-      if (axisType === "x") {
-        xp = 2 * k - x;
-        wordingAxis = `x = ${k}`;
-      } else {
-        yp = 2 * k - y;
-        wordingAxis = `y = ${k}`;
-      }
+    // stock solution (niveau 1/2 = même pts ; niveau 3 = image)
+    if (!card._solutionPts) card._solutionPts = pts;
 
-      return {
-        type: "axiale",
-        title: "Symétrie axiale",
-        question: `Soit A(${x} ; ${y}) et l’axe (d) : ${wordingAxis}. Donner les coordonnées de A′, image de A par la symétrie d’axe (d).`,
-        correction: `A′(${xp} ; ${yp})`
-      };
+    // pour correction : on dessine sur le quadrillage de droite en rouge, mais caché/montré via classe
+    card._blankCanvas = cBlank;
+
+    return card;
+  }
+
+  function renderCorrectionCard(exCard, index){
+    const card = document.createElement("article");
+    card.className = "card";
+
+    const title = document.createElement("h3");
+    title.textContent = `Correction ${index+1}`;
+    card.appendChild(title);
+
+    const pair = document.createElement("div");
+    pair.className = "pair";
+    card.appendChild(pair);
+
+    const left = document.createElement("div");
+    left.className = "canvasWrap";
+    const right = document.createElement("div");
+    right.className = "canvasWrap";
+
+    const cModel = exCard.querySelector("canvas"); // modèle du card exercice
+    const cloneModel = makeCanvas();
+    cloneModel.getContext("2d").drawImage(cModel, 0, 0);
+
+    const cCorr = makeCanvas();
+
+    left.appendChild(cloneModel);
+    right.appendChild(cCorr);
+
+    pair.appendChild(left);
+    pair.appendChild(right);
+
+    const legend = document.createElement("div");
+    legend.className = "legend";
+    legend.innerHTML = `<span class="tag">Modèle</span><span class="tag">Correction</span>`;
+    card.appendChild(legend);
+
+    const ctxC = cCorr.getContext("2d");
+    drawGrid(ctxC);
+
+    // correction = figure rouge
+    drawPolygon(ctxC, exCard._solutionPts, "#b91c1c", 3);
+    drawPoints(ctxC, exCard._solutionPts, "#b91c1c");
+
+    // si niveau 3, redessiner l’axe sur correction aussi
+    if (exCard._axisX != null){
+      const ax = pad + exCard._axisX*cellSize;
+      ctxC.beginPath();
+      ctxC.moveTo(ax, pad);
+      ctxC.lineTo(ax, pad + cells*cellSize);
+      ctxC.strokeStyle = "#94a3b8";
+      ctxC.setLineDash([6,4]);
+      ctxC.lineWidth = 2;
+      ctxC.stroke();
+      ctxC.setLineDash([]);
     }
 
-    function generateCentral() {
-      const h = randInt(-3, 3);
-      const k = randInt(-3, 3);
-      const x = randInt(-5, 5);
-      const y = randInt(-5, 5);
+    return card;
+  }
 
-      const xp = 2 * h - x;
-      const yp = 2 * k - y;
+  // --------- orchestration ----------
+  const exContainer = document.getElementById("exercises");
+  const corrContainer = document.getElementById("corrections");
+  const btnNew = document.getElementById("btnNew");
+  const btnCorr = document.getElementById("btnCorr");
+  const btnPrint = document.getElementById("btnPrint");
+  const selLevel = document.getElementById("level");
+  const selCount = document.getElementById("count");
 
-      return {
-        type: "centrale",
-        title: "Symétrie centrale",
-        question: `Soit O(${h} ; ${k}) le centre de symétrie et A(${x} ; ${y}). Donner les coordonnées de A′, image de A par la symétrie de centre O.`,
-        correction: `A′(${xp} ; ${yp})`
-      };
+  let showCorrectionsOnScreen = false;
+  let currentCards = [];
+
+  function generate(){
+    exContainer.innerHTML = "";
+    corrContainer.innerHTML = "";
+    currentCards = [];
+
+    const level = parseInt(selLevel.value, 10);
+    const count = parseInt(selCount.value, 10);
+
+    for (let i=0; i<count; i++){
+      const card = renderExerciseCard(i, level);
+      currentCards.push(card);
+      exContainer.appendChild(card);
     }
 
-    function generateAll() {
-      const container = document.getElementById("exos");
-      container.innerHTML = "";
+    // construire la section correction (utile pour impression)
+    currentCards.forEach((c, i) => {
+      corrContainer.appendChild(renderCorrectionCard(c, i));
+    });
 
-      const exos = [];
-      // 3 axiales + 3 centrales
-      for (let i = 0; i < 3; i++) exos.push(generateAxial());
-      for (let i = 0; i < 3; i++) exos.push(generateCentral());
+    // Sur écran, on peut masquer la section correction en bas si on veut
+    corrContainer.classList.toggle("hidden", !showCorrectionsOnScreen);
+  }
 
-      // Mélange
-      for (let i = exos.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [exos[i], exos[j]] = [exos[j], exos[i]];
-      }
+  function toggleCorrections(){
+    showCorrectionsOnScreen = !showCorrectionsOnScreen;
+    corrContainer.classList.toggle("hidden", !showCorrectionsOnScreen);
+  }
 
-      exos.forEach((exo, index) => {
-        const div = document.createElement("article");
-        div.className = "exo";
-        div.innerHTML = `
-          <div class="exo-type">${exo.type === "axiale" ? "Symétrie axiale" : "Symétrie centrale"}</div>
-          <div class="exo-title">Exercice ${index + 1}</div>
-          <p class="question">${exo.question}</p>
-          <p class="correction"><strong>Correction :</strong> ${exo.correction}</p>
-        `;
-        container.appendChild(div);
-      });
-    }
+  function printPDF(){
+    // Le navigateur -> “Enregistrer en PDF”
+    window.print();
+  }
 
-    function toggleCorrections() {
-      const exos = document.querySelectorAll(".exo");
-      exos.forEach(exo => exo.classList.toggle("show"));
-    }
+  btnNew.addEventListener("click", generate);
+  btnCorr.addEventListener("click", toggleCorrections);
+  btnPrint.addEventListener("click", printPDF);
 
-    document.getElementById("btn-new").addEventListener("click", generateAll);
-    document.getElementById("btn-corr").addEventListener("click", toggleCorrections);
-
-    // Génère une première série au chargement
-    generateAll();
-  </script>
+  generate();
+</script>
 </body>
 </html>
